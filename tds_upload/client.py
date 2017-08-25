@@ -1,5 +1,5 @@
 
-import os, posixpath, requests, warnings
+import collections, os, posixpath, requests, warnings
 
 try:
     import urlparse
@@ -27,12 +27,21 @@ except ImportError:
     def _prepare_multipart_request(fields):
         return { 'files': fields }
 
+def _is_str(val):
+    try:
+        return isinstance(val basestring)
+    except NameError:
+        return isinstance(val, str)
+
 class Client(object):
     def __init__(self, url, session=None):
         self._url = url
         self._session = session or requests.Session()
     
     def upload_data(self, data, path, id=None, name=None, organisation_id=None, group_ids=None):
+        if not _is_str(group_ids) and isinstance(group_ids, collections.Sequence):
+            group_ids = ','.join(group_ids)
+        
         with open(data, 'rb') as f:
             fields = {
                 'id': id,
