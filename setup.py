@@ -11,11 +11,11 @@ def get_version(version_file):
     return ns['__version__']
 
 setup(
-    name = 'tds_upload',
-    version = get_version('tds_upload/version.py'),
+    name = 'tdm',
+    version = get_version('tdm/version.py'),
     author = 'Mac Coombe',
     author_email = 'mac.coombe@csiro.au',
-    description = ('Thredds Data Server (TDS) Upload Service Client'),
+    description = ('Thredds Data Manager Client'),
     # TODO: license = '',
     keywords = 'Thredds',
     url = 'https://bitbucket.csiro.au/projects/SC/repos/tds-upload-client-python/browse',
@@ -24,6 +24,11 @@ setup(
     install_requires = [
         'requests'
     ],
+    extras_require = {
+        'large_files': [
+            'requests-toolbelt'
+        ]
+    },
     classifiers = [
         'Development Status :: 3 - Alpha',
         'Topic :: Scientific/Engineering :: Information Analysis',
