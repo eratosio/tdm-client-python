@@ -29,7 +29,7 @@ except ImportError:
 
 def _is_str(val):
     try:
-        return isinstance(val basestring)
+        return isinstance(val, basestring)
     except NameError:
         return isinstance(val, str)
 
