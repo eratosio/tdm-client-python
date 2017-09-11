@@ -2,9 +2,13 @@
 *.pyo
 *.egg-info
 
-/build
-/dist
+**/build
+**/dist
+
+/doc/build
 /doc/_build
+/doc/dist
+
 
 test.py
 
