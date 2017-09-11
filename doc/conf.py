@@ -86,9 +86,9 @@ todo_include_todos = False
 #
 html_theme = "sphinx_rtd_theme"
 html_theme_options = {
-	'collapse_navigation': False,
-    'display_version': False,
-    'navigation_depth': 4,
+	'collapse_navigation': True,
+    'display_version': True,
+    'navigation_depth': 1,
 }
 
 # Theme options are theme-specific and customize the look and feel of a theme

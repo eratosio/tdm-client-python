@@ -5,10 +5,7 @@
 **/build
 **/dist
 
-/doc/build
 /doc/_build
-/doc/dist
-
 
 test.py
 
