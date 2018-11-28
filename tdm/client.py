@@ -86,7 +86,7 @@ class Client(object):
         :raises requests.exceptions.HTTPError: if an HTTP error occurs.
         """
 
-        return self._handle_put_post("post", data, path, id=id, name=name, organisation_id=organisation_id, group_ids=group_ids)
+        return self._handle_put_post("POST", data, path, id=id, name=name, organisation_id=organisation_id, group_ids=group_ids)
 
     def upload_data(self, data, path, name=None, organisation_id=None, group_ids=None):
         """
@@ -120,7 +120,7 @@ class Client(object):
         :raises requests.exceptions.HTTPError: if an HTTP error occurs.
         """
 
-        self._handle_put_post("put", data, path, id=None, name=name, organisation_id=organisation_id, group_ids=group_ids)
+        self._handle_put_post("PUT", data, path, id=None, name=name, organisation_id=organisation_id, group_ids=group_ids)
 
     def _handle_put_post(self, method, data, path, id=None, name=None, organisation_id=None, group_ids=None):
 
@@ -147,8 +147,7 @@ class Client(object):
 
     def _do_upload(self, method, fields):
         request = _prepare_multipart_request(fields)
-        func = getattr(self._session, method)
-        response = func(self._get_endpoint('data'), **request)
+        response = self._session.request(method, self._get_endpoint('data'), **request)
         response.raise_for_status()
 
         if response.status_code == 200:
