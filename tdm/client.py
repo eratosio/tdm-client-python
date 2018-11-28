@@ -1,5 +1,5 @@
 
-import collections, os, posixpath, requests, warnings
+import collections, os, posixpath, requests, warnings, unittest
 
 try:
     import urlparse
@@ -85,29 +85,78 @@ class Client(object):
         :rtype: tdm.UploadSuccess
         :raises requests.exceptions.HTTPError: if an HTTP error occurs.
         """
-        
+
+        return self._handle_put_post("post", data, path, id=id, name=name, organisation_id=organisation_id, group_ids=group_ids)
+
+    def replace_data(self, data, path, name=None, organisation_id=None, group_ids=None):
+        """
+        Upload a data replacement data file to Thredds. The dataset at the path must already exist.
+
+        :param data: The path on disk of the file to upload.
+        :type data: str
+
+        :param path: The URL path of the dataset that is to be created or
+            updated.
+            If the ``organisation_id`` parameter is supplied, the final URL path
+            of the dataset will have an organisation-specific component
+            prepended to it.
+        :type path: str
+
+        :param name: The name to assign to the dataset.
+            If omitted, the existing dataset name will be retained.
+        :type name: str
+
+        :param organisation_id: The ID of the Senaps organisation that owns the
+            dataset.
+            If omitted, the organisation ID will be derived from the first
+            component of the supplied ``path``.
+        :type organisation_id: str
+
+        :param group_ids: A list of the IDs of the Senaps groups that should
+            contain the dataset, this will replace any existing group membership.
+            May be supplied either as a list, or as a comma-separated string.
+            If omitted the existing groups will be retained.
+        :type group_ids: str|list
+
+        :raises requests.exceptions.HTTPError: if an HTTP error occurs.
+        """
+
+        self._handle_put_post("put", data, path, id=None, name=name, organisation_id=organisation_id, group_ids=group_ids)
+
+    def _handle_put_post(self, method, data, path, id=None, name=None, organisation_id=None, group_ids=None):
+
         if not _is_str(group_ids) and isinstance(group_ids, collections.Sequence):
             group_ids = ','.join(group_ids)
-        
-        with open(data, 'rb') as f:
-            fields = {
-                'id': id,
-                'name': name,
-                'organisationid': organisation_id,
-                'groupids': group_ids,
-                'path': path,
-                'data': f
-            }
-            
-            fields = { k:v for k,v in fields.iteritems() if v is not None }
-            
-            request = _prepare_multipart_request(fields)
-            
-            response = self._session.post(self._get_endpoint('data'), **request)
-            response.raise_for_status()
-            
+
+        fields = {
+            'id': id,
+            'name': name,
+            'organisationid': organisation_id,
+            'groupids': group_ids,
+            'path': path
+        }
+
+        # Remove null fields
+        fields = {k: v for k, v in fields.items() if v is not None}
+
+        if data is not None:
+            with open(data, 'rb') as f:
+                fields['data'] = f
+                return self._do_upload(method, fields)
+        else:
+            return self._do_upload(method, fields)
+
+    def _do_upload(self, method, fields):
+        request = _prepare_multipart_request(fields)
+        func = getattr(self._session, method)
+        response = func(self._get_endpoint('data'), **request)
+        response.raise_for_status()
+
+        if response.status_code == 200:
+            # Expect content in response
             return UploadSuccess(response.json())
-    
+
+
     def delete_data(self, path=None, id=None, organisation_id=None):
         """
         Delete a data file from Thredds. The file to delete may be identified by
@@ -194,3 +243,35 @@ class UploadSuccess(object):
     def id(self):
         """The dataset's ID"""
         return self._id
+
+
+class TdmClientTests(unittest.TestCase):
+
+    def setUp(self):
+        session = requests.Session()
+        session.auth = ('tests@dev.senaps.io', 'tests')
+
+        self.client = Client('https://dev.senaps.io/tdm', session)
+
+    def test_post_missing_data(self):
+
+        response = self.client.upload_data(None, 'test/test_create_empty.nc')
+        self.assertIsInstance(response, UploadSuccess)
+        self.client.delete_data('test/test_create_empty.nc')
+
+    def test_put_replace_data(self):
+
+        self.client.upload_data(None, 'test/replace_test.nc')
+        self.client.replace_data('../test_data/sresa1b_ncar_ccsm3-example.nc', 'test/replace_test.nc')
+        self.client.delete_data('test/replace_test.nc')
+
+    def test_delete_data(self):
+
+        self.client.upload_data(None, 'test/test_create_empty.nc')
+        self.client.delete_data('test/test_create_empty.nc')
+
+    def test_delete_unknown_data_raises_error(self):
+        with self.assertRaises(requests.exceptions.HTTPError):
+            self.client.delete_data('test/blah.nc')
+
+
