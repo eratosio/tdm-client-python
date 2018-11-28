@@ -47,11 +47,11 @@ class Client(object):
         self._url = url
         self._session = session or requests.Session()
     
-    def upload_data(self, data, path, id=None, name=None, organisation_id=None, group_ids=None):
+    def create_data(self, data, path, id=None, name=None, organisation_id=None, group_ids=None):
         """
         Upload a data file to Thredds. This may create a new dataset, or replace
-        the data for an existing dataset.
-        
+        an existing dataset including all its properties.
+
         :param data: The path on disk of the file to upload.
         :type data: str
         :param path: The URL path of the dataset that is to be created or
@@ -88,15 +88,14 @@ class Client(object):
 
         return self._handle_put_post("post", data, path, id=id, name=name, organisation_id=organisation_id, group_ids=group_ids)
 
-    def replace_data(self, data, path, name=None, organisation_id=None, group_ids=None):
+    def upload_data(self, data, path, name=None, organisation_id=None, group_ids=None):
         """
         Upload a data replacement data file to Thredds. The dataset at the path must already exist.
 
         :param data: The path on disk of the file to upload.
         :type data: str
 
-        :param path: The URL path of the dataset that is to be created or
-            updated.
+        :param path: The URL path of the dataset that is to be updated.
             If the ``organisation_id`` parameter is supplied, the final URL path
             of the dataset will have an organisation-specific component
             prepended to it.
@@ -255,19 +254,19 @@ class TdmClientTests(unittest.TestCase):
 
     def test_post_missing_data(self):
 
-        response = self.client.upload_data(None, 'test/test_create_empty.nc')
+        response = self.client.create_data(None, 'test/test_create_empty.nc')
         self.assertIsInstance(response, UploadSuccess)
         self.client.delete_data('test/test_create_empty.nc')
 
     def test_put_replace_data(self):
 
-        self.client.upload_data(None, 'test/replace_test.nc')
-        self.client.replace_data('../test_data/sresa1b_ncar_ccsm3-example.nc', 'test/replace_test.nc')
+        self.client.create_data(None, 'test/replace_test.nc')
+        self.client.upload_data('../test_data/sresa1b_ncar_ccsm3-example.nc', 'test/replace_test.nc')
         self.client.delete_data('test/replace_test.nc')
 
     def test_delete_data(self):
 
-        self.client.upload_data(None, 'test/test_create_empty.nc')
+        self.client.create_data(None, 'test/test_create_empty.nc')
         self.client.delete_data('test/test_create_empty.nc')
 
     def test_delete_unknown_data_raises_error(self):
