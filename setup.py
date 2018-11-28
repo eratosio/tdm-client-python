@@ -15,10 +15,10 @@ setup(
     version = get_version('tdm/version.py'),
     author = 'Mac Coombe',
     author_email = 'mac.coombe@csiro.au',
-    description = ('Thredds Data Manager Client'),
+    description = ('THREDDS Data Manager Client'),
     # TODO: license = '',
-    keywords = 'Thredds',
-    url = 'https://bitbucket.csiro.au/projects/SC/repos/tds-upload-client-python/browse',
+    keywords = 'THREDDS',
+    url = 'https://bitbucket.csiro.au/projects/SC/repos/tdm-client-python/browse',
     packages = find_packages(),
     long_description = read('readme.md'),
     install_requires = [
@@ -32,7 +32,7 @@ setup(
     classifiers = [
         'Development Status :: 3 - Alpha',
         'Topic :: Scientific/Engineering :: Information Analysis',
-        # TODO: 'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: BSD License',
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'Operating System :: POSIX',
