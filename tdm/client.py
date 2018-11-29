@@ -192,7 +192,7 @@ class Client(object):
             'id': id,
             'organisationid': organisation_id
         }
-        params = { k:v for k,v in params.iteritems() if v is not None }
+        params = { k:v for k,v in params.items() if v is not None }
         
         self._session.delete(self._get_endpoint('data'), params=params).raise_for_status()
     
@@ -247,7 +247,7 @@ class TdmClientTests(unittest.TestCase):
 
     def setUp(self):
         session = requests.Session()
-        session.auth = ('tests@dev.senaps.io', 'tests')
+        session.auth = requests.auth.HTTPBasicAuth('tests@dev.senaps.io', 'tests')
 
         self.client = Client('https://dev.senaps.io/tdm', session)
 
