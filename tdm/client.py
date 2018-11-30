@@ -150,7 +150,7 @@ class Client(object):
         response = self._session.request(method, self._get_endpoint('data'), **request)
         response.raise_for_status()
 
-        if response.status_code == 200:
+        if response.status_code in [200, 201]:
             # Expect content in response
             return UploadSuccess(response.json())
 
@@ -256,6 +256,12 @@ class TdmClientTests(unittest.TestCase):
         response = self.client.create_data(None, 'test/test_create_empty.nc')
         self.assertIsInstance(response, UploadSuccess)
         self.client.delete_data('test/test_create_empty.nc')
+
+    def test_post_replace_data(self):
+
+        self.client.create_data(None, 'test/replace_test.nc')
+        self.client.create_data('../test_data/sresa1b_ncar_ccsm3-example.nc', 'test/replace_test.nc')
+        self.client.delete_data('test/replace_test.nc')
 
     def test_put_replace_data(self):
 
