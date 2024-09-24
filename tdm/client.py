@@ -32,6 +32,7 @@ except ImportError:
     def _prepare_multipart_request(fields):
         return { 'files': fields }
 
+
 class Client(object):
     def __init__(self, url, session=None):
         """
@@ -45,6 +46,17 @@ class Client(object):
 
         self._url = url
         self._session = session or requests.Session()
+
+        # If the requests-toolbelt is available, use it to enable TCP keep-alive
+        # for large file uploads. See
+        #
+        try:
+            from requests_toolbelt.adapters import socket_options
+            tcp = socket_options.TCPKeepAliveAdapter(idle=120, interval=10)
+            session.mount('https://', tcp)
+        except ImportError:
+            warnings.warn("TCP Keepalive not enabled. requests_toolbelt package unavailable.")
+
 
     def create_data(self, data, path, id=None, name=None, organisation_id=None, group_ids=None):
         """
