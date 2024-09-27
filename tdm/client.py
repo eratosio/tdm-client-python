@@ -48,8 +48,8 @@ class Client(object):
         self._session = session or requests.Session()
 
         # If the requests-toolbelt is available, use it to enable TCP keep-alive
-        # for large file uploads. See
-        #
+        # for large file uploads.
+        # NOTE: requests-toolbelt is installed with the 'large_files' 'extras_require' in setup.py.
         try:
             from requests_toolbelt.adapters import socket_options
             tcp = socket_options.TCPKeepAliveAdapter(idle=120, interval=10)
