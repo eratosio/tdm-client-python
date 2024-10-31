@@ -1,5 +1,6 @@
 
-import collections, os, posixpath, requests, warnings, unittest
+import posixpath, requests, warnings
+from collections.abc import Sequence
 
 try:
     import urlparse
@@ -123,7 +124,7 @@ class Client(object):
 
     def _handle_put_post(self, method, data, path, id=None, name=None, organisation_id=None, group_ids=None):
 
-        if not isinstance(group_ids, str_type) and isinstance(group_ids, collections.Sequence):
+        if not isinstance(group_ids, str_type) and isinstance(group_ids, Sequence):
             group_ids = ','.join(group_ids)
 
         fields = {
@@ -148,6 +149,7 @@ class Client(object):
         request = _prepare_multipart_request(fields)
         response = self._session.request(method, self._get_endpoint('data'), **request)
         response.raise_for_status()
+        
 
         if response.status_code in [200, 201]:
             # Expect content in response
