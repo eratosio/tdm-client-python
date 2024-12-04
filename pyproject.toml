@@ -1,0 +1,35 @@
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tdm"
+dynamic = ["version"]
+requires-python = ">= 3.0"
+description = "THREDDS Data Manager Client"
+readme = "readme.md" # Adjust if you have a README file
+authors = [{ name = "Mac Coombe", email = "mac.coombe@csiro.au" }]
+keywords = ["THREDDS"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "License :: OSI Approved :: BSD License",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Operating System :: POSIX",
+  "Programming Language :: Python :: 2.7",
+]
+dependencies = ["requests"]
+
+[project.optional-dependencies]
+large_files = ["requests-toolbelt"]
+
+[project.urls]
+Homepage = "https://bitbucket.csiro.au/projects/SC/repos/tdm-client-python/browse"
+
+[tool.hatch.version]
+path = "tdm/version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["tdm"]
