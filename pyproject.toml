@@ -4,7 +4,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "tdm-client"
+name = "senaps-tdm"
 dynamic = ["version"]
 requires-python = ">= 3.0"
 description = "THREDDS Data Manager Client"
@@ -14,7 +14,6 @@ keywords = ["THREDDS"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Topic :: Scientific/Engineering :: Information Analysis",
-  "License :: OSI Approved :: BSD License",
   "Intended Audience :: Developers",
   "Natural Language :: English",
   "Operating System :: POSIX",
