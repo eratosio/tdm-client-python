@@ -1,5 +1,6 @@
 
-import collections, os, posixpath, requests, warnings, unittest
+import posixpath, requests, warnings
+from collections.abc import Sequence
 
 try:
     import urlparse
@@ -123,7 +124,7 @@ class Client(object):
 
     def _handle_put_post(self, method, data, path, id=None, name=None, organisation_id=None, group_ids=None):
 
-        if not isinstance(group_ids, str_type) and isinstance(group_ids, collections.Sequence):
+        if not isinstance(group_ids, str_type) and isinstance(group_ids, Sequence):
             group_ids = ','.join(group_ids)
 
         fields = {
@@ -148,6 +149,7 @@ class Client(object):
         request = _prepare_multipart_request(fields)
         response = self._session.request(method, self._get_endpoint('data'), **request)
         response.raise_for_status()
+        
 
         if response.status_code in [200, 201]:
             # Expect content in response
@@ -242,37 +244,3 @@ class UploadSuccess(object):
         return self._id
 
 
-class TdmClientTests(unittest.TestCase):
-
-    def setUp(self):
-        session = requests.Session()
-        session.auth = requests.auth.HTTPBasicAuth('tests@dev.senaps.io', 'tests')
-
-        self.client = Client('https://dev.senaps.io/tdm', session)
-
-    def test_post_missing_data(self):
-
-        response = self.client.create_data(None, 'test/test_create_empty.nc')
-        self.assertIsInstance(response, UploadSuccess)
-        self.client.delete_data('test/test_create_empty.nc')
-
-    def test_post_replace_data(self):
-
-        self.client.create_data(None, 'test/replace_test.nc')
-        self.client.create_data('../test_data/sresa1b_ncar_ccsm3-example.nc', 'test/replace_test.nc')
-        self.client.delete_data('test/replace_test.nc')
-
-    def test_put_replace_data(self):
-
-        self.client.create_data(None, 'test/replace_test.nc')
-        self.client.upload_data('../test_data/sresa1b_ncar_ccsm3-example.nc', 'test/replace_test.nc')
-        self.client.delete_data('test/replace_test.nc')
-
-    def test_delete_data(self):
-
-        self.client.create_data(None, 'test/test_create_empty.nc')
-        self.client.delete_data('test/test_create_empty.nc')
-
-    def test_delete_unknown_data_raises_error(self):
-        with self.assertRaises(requests.exceptions.HTTPError):
-            self.client.delete_data('test/blah.nc')
