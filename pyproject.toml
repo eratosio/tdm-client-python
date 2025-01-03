@@ -9,7 +9,7 @@ dynamic = ["version"]
 requires-python = ">= 3.0"
 description = "THREDDS Data Manager Client"
 readme = "readme.md" # Adjust if you have a README file
-authors = [{ name = "Mac Coombe", email = "mac.coombe@csiro.au" }]
+authors = [{ name = "Mac Coombe", email = "mac.coombe@csiro.au" }, { name = "Eratos", email = "support@eratos.com" }]
 maintainers = [{ name = "Eratos", email = "support@eratos.com" }]
 keywords = ["THREDDS"]
 classifiers = [
@@ -31,7 +31,7 @@ dependencies = ["requests"]
 large_files = ["requests-toolbelt"]
 
 [project.urls]
-Homepage = "https://bitbucket.csiro.au/projects/SC/repos/tdm-client-python/browse"
+Homepage = "https://github.com/eratosio/tdm-client-python"
 
 [tool.hatch.version]
 path = "tdm/version.py"
